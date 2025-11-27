@@ -1,0 +1,18 @@
+# Experimental notebooks
+notebooks/
+
+## Python
+.venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# MacOS
+.DS_Store
+
+# Environment
+.env
+
+## DVC
+
+# DVC will add new files after this line

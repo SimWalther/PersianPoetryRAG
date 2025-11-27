@@ -1,0 +1,41 @@
+[project]
+name = "pa"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "arabic-reshaper>=3.0.0",
+    "bentoml>=1.4.26",
+    "dotenv>=0.9.9",
+    "dvc>=3.63.0",
+    "fastapi>=0.120.4",
+    "greenlet>=3.2.4",
+    "ipywidgets>=8.1.7",
+    "langchain>=0.3.27",
+    "langchain-experimental>=0.3.4",
+    "langchain-huggingface>=0.3.1",
+    "langchain-ollama>=0.3.8",
+    "langchain-postgres>=0.0.15",
+    "langgraph>=0.6.7",
+    "matplotlib>=3.10.6",
+    "nbformat>=5.10.4",
+    "pacmap>=0.8.0",
+    "pandas>=2.3.2",
+    "plotly>=6.3.1",
+    "psycopg2-binary>=2.9.10",
+    "pyarrow>=21.0.0",
+    "python-docx>=1.2.0",
+    "rank-bm25>=0.2.2",
+    "scikit-learn>=1.7.2",
+    "sentence-transformers>=5.1.1",
+    "sentencepiece>=0.2.1",
+    "shekar>=0.1.26",
+    "tqdm>=4.67.1",
+    "umap-learn>=0.5.9.post2",
+]
+
+[tool.uv.workspace]
+members = [
+    "app",
+]

@@ -1,0 +1,117 @@
+stages:
+  snapshot_ghazal_table:
+    cmd: python src/snapshot_ghazal_table.py
+    deps:
+    - src/snapshot_ghazal_table.py
+    - src/utils/dump_table.py
+    - .env
+    outs:
+    - data/raw/ghazal.parquet
+
+  snapshot_masnavi_bakhsh_table:
+    cmd: python src/snapshot_masnavi_bakhsh_table.py
+    deps:
+    - src/snapshot_masnavi_bakhsh_table.py
+    - src/utils/dump_table.py
+    - .env
+    outs:
+    - data/raw/masnavi_bakhsh.parquet
+
+  snapshot_masnavi_table:
+    cmd: python src/snapshot_masnavi_table.py
+    deps:
+    - src/snapshot_masnavi_table.py
+    - src/utils/dump_table.py
+    - .env
+    outs:
+    - data/raw/masnavi.parquet
+
+  snapshot_programs_table:
+    cmd: python src/snapshot_programs_table.py
+    deps:
+    - src/snapshot_programs_table.py
+    - src/utils/dump_table.py
+    - .env
+    outs:
+    - data/raw/programs.parquet       
+  
+  create_program_chunks:
+    cmd: python src/create_program_chunks.py
+    deps:
+    - data/raw/programs.parquet
+    - src/create_program_chunks.py
+    outs:
+    - data/raw/programs_chunked.parquet
+
+  translate_ghazal:
+    cmd: python src/translate_ghazal.py
+    deps:
+    - data/raw/ghazal.parquet
+    - src/translate_ghazal.py
+    - src/utils/load_model.py
+    outs:
+    - data/raw/ghazal_with_translation.parquet  
+
+  translate_programs:
+    cmd: python src/translate_programs.py
+    deps:
+    - data/raw/programs_chunked.parquet
+    - src/translate_programs.py
+    - src/utils/load_model.py
+    outs:
+    - data/raw/programs_with_translation.parquet
+
+  create_embeddings:
+    cmd: python src/create_embeddings.py
+    deps:
+      - data/raw/ghazal_with_translation.parquet
+      - data/raw/masnavi.parquet
+      - data/raw/masnavi_bakhsh.parquet
+      - data/raw/programs_with_translation.parquet
+      - src/utils/create_embeddings_ghazal.py
+      - src/utils/create_embeddings_masnavi.py
+      - src/utils/create_embeddings_programs.py
+      - src/utils/common_embeddings.py
+      - src/utils/dump_table.py
+    outs:
+      - data/prepared/ghazal_documents.pkl
+      - data/prepared/programs_documents.pkl
+      - data/prepared/masnavi_documents.pkl
+      - data/prepared/embeddings.parquet      
+
+  create_evaluation_questions:
+    cmd: python src/create_evaluation_questions.py
+    deps:
+    - src/create_evaluation_questions.py
+    - src/utils/load_model.py
+    - data/prepared/ghazal_documents.pkl
+    - data/prepared/masnavi_documents.pkl
+    - data/prepared/programs_documents.pkl
+    outs:
+    - data/prepared/generated_questions.pkl
+    
+  filter_generated_questions:
+    cmd: python src/filter_generated_questions.py
+    deps:
+    - src/filter_generated_questions.py
+    - src/utils/load_model.py
+    - data/prepared/generated_questions.pkl
+    outs:
+    - data/prepared/evaluation_dataset.parquet
+    plots:
+    - evaluation/plots/questions_score_distribution.png
+
+  evaluate_rag:
+    cmd: python src/evaluate_rag.py
+    deps:
+      - src/evaluate_rag.py
+      - src/utils/create_rag.py
+      - src/utils/load_model.py
+      - data/prepared/evaluation_dataset.parquet
+    outs:
+      - evaluation/rag_results.json
+    metrics:
+      - evaluation/metrics.json
+    plots:
+      - evaluation/plots/judge_scores.png
+

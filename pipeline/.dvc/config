@@ -1,0 +1,2 @@
+['db "pgsql"']
+    url = postgresql://simon@localhost/PersianPoetry

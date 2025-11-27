@@ -1,0 +1,8 @@
+/beyts_embeddings.parquet
+/masnavi_documents.pkl
+/ghazal_documents.pkl
+/embeddings.parquet
+/documents.pkl
+/generated_questions.pkl
+/evaluation_dataset.parquet
+/programs_documents.pkl

@@ -1,0 +1,121 @@
+chunking:
+  chunk_size: 400
+  chunk_overlap: 0
+translation:
+  translation_model: persiannlp/mt5-small-parsinlu-opus-translation_fa_en
+create_embeddings:
+  embedding_model: Qwen/Qwen3-Embedding-0.6B
+  embedding_table_name: pgvectors
+  embedding_size: 1024
+
+create_evaluation_questions:
+  num_questions: 100
+  question_generation_model: gemma3n:e4b
+  question_generation_prompt: |
+    Task:::
+    Your task is to write users queries related to Rumi's Persian poetry and an answer given a context.
+    Your query should be formulated in the same style as queries that users interested about Persian poetry.
+    Queries that would be truly intersting to a user curious about Persian poetry or for more exper user
+    wanting to get a deeper understanding of it by asking specific question about concepts or themes.
+    Never reference the poem or verse because the user will not have directly access to it, the query should
+    be self-contained: it should contain all the necessary context to understand it. 
+    The answers must be a one to three sentences short explanation that relies entierly on the context.
+
+    Context:::
+    {context}
+
+    Output format:::
+    Query: (Your query)
+    Answer: (Your answer)
+
+    Output:::
+filter_generated_questions:
+  score_threshold: 4
+  critique_model: gemma3n:e4b
+  critique_prompt: |
+    Task:::  
+    You will be given a context and a question.
+    Your task is to provide a 'Rating' scoring how well one can answer the given question unambiguously with the given context.
+
+    Score Rubrics:::
+    [Is the query relevant and self-contained based on the reference context?]
+    Score 1: The query is irrelevant and/or refers to missing context.
+    Score 2: The query is mostly irrelevant, the query is entierly understandable without additional context.
+    Score 3: The query is somewhat relevant, the query is entierly understandable without additional context.
+    Score 4: The query is mostly relevant, the query is entierly understandable without additional context.
+    Score 5: The query is perfectly relevant, the query is entierly understandable without additional context.
+
+    Answer:::
+    Evaluation: (your rationale for the rating, as a text, think step by step why the query would be relevant to someone intersted about Persian poetry and Rumi's work and concepts)
+    Rating: (your rating, as a number between 1 and 5)
+
+    You MUST provide values for 'Evaluation:' and 'Rating:' in your answer.
+
+    Now here are the question and context.
+
+    Question: {question}
+    Context: {context}
+    Answer:::
+rag:
+  num_references: 5
+  num_retrieved: 15
+  reader_model: glm4:9b
+  translation_model: gemma3n:e4b
+  reader_prompt: |
+    You're a RAG system, expert in interpreting Persian poetry and passionate about Jalāl al-Dīn Muḥammad Rumi poems.
+    You must entierly base your answers to the user queries on the retrieved documents.
+    {length}
+    ---
+    ### Example 1:
+    **User Query:** "Can you find Rumi verses that use fire as a metaphor for love?"
+    **Thinking** This query is English, so I will answer in English.
+    **Model Answer:** Rumi frequently uses fire as a metaphor for the intensity and transformative power of love. For example, in the following verses, fire symbolizes both the passion and the purifying nature of love:
+    - The first verse describes love as a fire that burns away fear and shame, suggesting a spiritual awakening.
+    - The second verse portrays the lover as a source of fire, igniting the world with every sigh, emphasizing the all-consuming nature of love.
+
+    Both verses use fire to convey the idea that love is not passive, but an active, transformative force.
+    ---
+    ### Retrieved documents: {context}
+    ### User Query::: {question}
+
+    ### Your Answer:
+  translation_prompt: |
+    Instruction:::
+    Take the query and translate it into Persian.
+    Give only the translation.
+
+    Example:::
+    Query: What does rumi says about love?
+    Translation: رومی در مورد عشق٬ مهر ٬ محبت چه میگوید؟
+
+    Output:::
+    Query: {question}
+    Translation:    
+evaluate_rag:
+  judge_model: gemma3n:e4b
+  evaluation_prompt: |
+    ###Task Description:
+    An instruction (might include an Input inside it), a response to evaluate, a reference answer that gets a score of 5, and a score rubric representing a evaluation criteria are given.
+    1. Write a detailed feedback that assess the quality of the response strictly based on the given score rubric, not evaluating in general.
+    2. After writing a feedback, write a score that is an integer between 1 and 5. You should refer to the score rubric.
+    3. The output format should look as follows: \"Feedback: {{write a feedback for criteria}} [RESULT] {{an integer number between 1 and 5}}\"
+    4. Please do not generate any other opening, closing, and explanations. Be sure to include [RESULT] in your output.
+
+    ###The instruction to evaluate:
+    {instruction}
+
+    ###Response to evaluate:
+    {response}
+
+    ###Reference Answer (Score 5):
+    {reference_answer}
+
+    ###Score Rubrics:
+    [Is the response correct, accurate, and factual based on the reference answer?]
+    Score 1: The response is completely incorrect, inaccurate, and/or not factual.
+    Score 2: The response is mostly incorrect, inaccurate, and/or not factual.
+    Score 3: The response is somewhat correct, accurate, and/or factual.
+    Score 4: The response is mostly correct, accurate, and factual.
+    Score 5: The response is completely correct, accurate, and factual.
+
+    ###Feedback:
