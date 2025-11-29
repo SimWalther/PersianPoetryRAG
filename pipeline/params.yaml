@@ -2,7 +2,8 @@ chunking:
   chunk_size: 400
   chunk_overlap: 0
 translation:
-  translation_model: gemma3:4b-it-qat
+  batch_size: 64
+  translation_model: google/gemma-3-4b-it
   translation_prompt: |
     Instruction:::
     Take the passages from either Persian classical Rumi poem or Persian podcast and translate it into English.
@@ -12,9 +13,6 @@ translation:
     مطلب تویی طالب تویی هم منتها هم مبتدا
     Translation:You are the eclipse of the sun, hope is due to you.
     You are the content, you are the seeker, both beginning and end.
-    ---
-    {text}
-    Translation:
 create_embeddings:
   embedding_model: Qwen/Qwen3-Embedding-0.6B
   embedding_table_name: pgvectors_wip
