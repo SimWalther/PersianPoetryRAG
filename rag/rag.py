@@ -10,7 +10,6 @@ from load_model import load_llm
 from typing import Dict, List, TypedDict
 from reranker import Reranker
 from bm25 import BM25
-from translation import EnglishToPersian
 from langdetect import detect
 import unicodedata
 
@@ -91,8 +90,7 @@ class RAG(object):
         self.reranker = Reranker()
 
         # Load translation models
-        self.translation_model = load_llm(translation_model)
-        self.en_fa_translator = EnglishToPersian()
+        self.translation_model = load_llm(translation_model, translation=True)
 
         # Compile application and test
         graph_builder = StateGraph(State).add_sequence([self._retrieve, self._generate])
@@ -129,9 +127,6 @@ class RAG(object):
         # Translate question
         if self._is_alphabet_persian(state['question']):
             persian_question = state['question']
-        elif detect(state['question']) == 'en': # Translate with a specialized EN->FA model
-            persian_question = self.en_fa_translator.translate(state['question'])
-            print(f"Translated as (1): {persian_question}")
         else:
             translation = self.translation_prompt_template.invoke({"question": state['question']})
             persian_question = self.translation_model.invoke(translation).content

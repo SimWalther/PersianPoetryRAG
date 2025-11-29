@@ -2,12 +2,23 @@ chunking:
   chunk_size: 400
   chunk_overlap: 0
 translation:
-  translation_model: persiannlp/mt5-small-parsinlu-opus-translation_fa_en
+  translation_model: gemma3:4b-it-qat
+  translation_prompt: |
+    Instruction:::
+    Take the passages from either Persian classical Rumi poem or Persian podcast and translate it into English.
+    You must only give the translation.
+    Example:::
+    خورشید را حاجب تویی اومید را واجب تویی
+    مطلب تویی طالب تویی هم منتها هم مبتدا
+    Translation:You are the eclipse of the sun, hope is due to you.
+    You are the content, you are the seeker, both beginning and end.
+    ---
+    {text}
+    Translation:
 create_embeddings:
   embedding_model: Qwen/Qwen3-Embedding-0.6B
-  embedding_table_name: pgvectors
+  embedding_table_name: pgvectors_wip
   embedding_size: 1024
-
 create_evaluation_questions:
   num_questions: 100
   question_generation_model: gemma3n:e4b

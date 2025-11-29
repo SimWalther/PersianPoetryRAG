@@ -85,15 +85,15 @@ stages:
     deps:
     - path: data/prepared/ghazal_documents.pkl
       hash: md5
-      md5: a435ee640a3b2cbd53022254e7041f2d
-      size: 10919647
+      md5: a1c992f2bceb2df29a1c2752319cb4e2
+      size: 6680740
     - path: data/prepared/masnavi_documents.pkl
       hash: md5
-      md5: a634c7762bf7e11759f2e9739283b262
+      md5: 2b4ec72adef81e8fa9d22847bb96a675
       size: 7380895
     - path: data/prepared/programs_documents.pkl
       hash: md5
-      md5: b1677d069cc1684988e6e0cefd658fce
+      md5: 6eed53ee1591183e49fbeded7963814d
       size: 49889715
     - path: src/create_evaluation_questions.py
       hash: md5
@@ -106,15 +106,15 @@ stages:
     outs:
     - path: data/prepared/generated_questions.pkl
       hash: md5
-      md5: f1905a5ca3d3477cb98aa3177b585a90
-      size: 68244
+      md5: eeb2146b290ede80d204022803fa8227
+      size: 67928
   filter_generated_questions:
     cmd: python src/filter_generated_questions.py
     deps:
     - path: data/prepared/generated_questions.pkl
       hash: md5
-      md5: f1905a5ca3d3477cb98aa3177b585a90
-      size: 68244
+      md5: eeb2146b290ede80d204022803fa8227
+      size: 67928
     - path: src/filter_generated_questions.py
       hash: md5
       md5: 3bc1f59253bdd44f5a1f9d80d59b3eca
@@ -126,12 +126,12 @@ stages:
     outs:
     - path: data/prepared/evaluation_dataset.parquet
       hash: md5
-      md5: fbb50d36a5922b12841863646ac38457
-      size: 68553
+      md5: 4ca07816d3a3fd6d2637e6dcd72eecee
+      size: 66154
     - path: evaluation/plots/questions_score_distribution.png
       hash: md5
-      md5: 5a0c430dfa2ea98182861f5ed6c798e9
-      size: 10627
+      md5: 1bf4349e38da51b414a436259af0663c
+      size: 9999
   evaluate_rag:
     cmd: python src/evaluate_rag.py
     deps:
@@ -209,8 +209,8 @@ stages:
     deps:
     - path: data/raw/ghazal_with_translation.parquet
       hash: md5
-      md5: d1d63df4e1c5f8790ed3e1263f76f433
-      size: 4465034
+      md5: 37cf24db9eab51f3c9f1b91ea323f7ab
+      size: 2212041
     - path: data/raw/masnavi.parquet
       hash: md5
       md5: 116b8f900523b95f8d65d6157013cdc7
@@ -237,8 +237,8 @@ stages:
       size: 1710
     - path: src/utils/create_embeddings_programs.py
       hash: md5
-      md5: 45128b47648887fd2ea2903a5df6c3a6
-      size: 1185
+      md5: 057636a1895441b060c0af01542f149f
+      size: 1180
     - path: src/utils/dump_table.py
       hash: md5
       md5: 51d3cef161f9b40b86aed5dc07c5eeef
@@ -246,19 +246,19 @@ stages:
     outs:
     - path: data/prepared/embeddings.parquet
       hash: md5
-      md5: 88ed4b1b23a57e2b2198202ce6193b57
-      size: 1055713701
+      md5: e94540dcfdab2ad3d40b4ec1e1828342
+      size: 1053800941
     - path: data/prepared/ghazal_documents.pkl
       hash: md5
-      md5: a435ee640a3b2cbd53022254e7041f2d
-      size: 10919647
+      md5: a1c992f2bceb2df29a1c2752319cb4e2
+      size: 6680740
     - path: data/prepared/masnavi_documents.pkl
       hash: md5
-      md5: a634c7762bf7e11759f2e9739283b262
+      md5: 2b4ec72adef81e8fa9d22847bb96a675
       size: 7380895
     - path: data/prepared/programs_documents.pkl
       hash: md5
-      md5: b1677d069cc1684988e6e0cefd658fce
+      md5: 6eed53ee1591183e49fbeded7963814d
       size: 49889715
   create_program_chunks:
     cmd: python src/create_program_chunks.py
@@ -283,40 +283,40 @@ stages:
   translate_programs:
     cmd: python src/translate_programs.py
     deps:
+    - path: ../rag/load_model.py
+      hash: md5
+      md5: 171dfee00e7ca475b745ff6e6de7429d
+      size: 281
     - path: data/raw/programs_chunked.parquet
       hash: md5
       md5: 58f2b7d7f0e3090bc8db6e7dca2a45ee
       size: 18991744
     - path: src/translate_programs.py
       hash: md5
-      md5: 7c1bfa729b6548e72d1dcdef5ee7e28f
-      size: 912
-    - path: src/utils/load_model.py
-      hash: md5
-      md5: 96ed4b51215e086fc8c477ab401961ee
-      size: 94
+      md5: 44ada252ebb0e38c676924aa2b78b614
+      size: 1272
     outs:
     - path: data/raw/programs_with_translation.parquet
       hash: md5
-      md5: 8594f281ecea0e016c9bb5817abb672f
-      size: 21409471
+      md5: 0020dfcefd89142d995caddc1720dba5
+      size: 18866499
   translate_ghazal:
     cmd: python src/translate_ghazal.py
     deps:
+    - path: ../rag/load_model.py
+      hash: md5
+      md5: 171dfee00e7ca475b745ff6e6de7429d
+      size: 281
     - path: data/raw/ghazal.parquet
       hash: md5
       md5: f0b398559371df0b08306acddd934c67
       size: 2211524
     - path: src/translate_ghazal.py
       hash: md5
-      md5: 847a0329b749440ca64b5a4a6c5231fa
-      size: 912
-    - path: src/utils/load_model.py
-      hash: md5
-      md5: 96ed4b51215e086fc8c477ab401961ee
-      size: 94
+      md5: 30a46e1862fe77974c28604b9e393b6c
+      size: 1191
     outs:
     - path: data/raw/ghazal_with_translation.parquet
       hash: md5
-      md5: f08036af8cd7bcbc416eeed91de0f507
-      size: 3478312
+      md5: 82e3c3f2f94e57e29c83c574f6e08370
+      size: 4305565

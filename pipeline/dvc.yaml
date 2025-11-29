@@ -48,7 +48,7 @@ stages:
     deps:
     - data/raw/ghazal.parquet
     - src/translate_ghazal.py
-    - src/utils/load_model.py
+    - ../rag/load_model.py
     outs:
     - data/raw/ghazal_with_translation.parquet  
 
@@ -57,7 +57,7 @@ stages:
     deps:
     - data/raw/programs_chunked.parquet
     - src/translate_programs.py
-    - src/utils/load_model.py
+    - ../rag/load_model.py
     outs:
     - data/raw/programs_with_translation.parquet
 
@@ -83,7 +83,7 @@ stages:
     cmd: python src/create_evaluation_questions.py
     deps:
     - src/create_evaluation_questions.py
-    - src/utils/load_model.py
+    - ../rag/load_model.py
     - data/prepared/ghazal_documents.pkl
     - data/prepared/masnavi_documents.pkl
     - data/prepared/programs_documents.pkl
@@ -94,7 +94,7 @@ stages:
     cmd: python src/filter_generated_questions.py
     deps:
     - src/filter_generated_questions.py
-    - src/utils/load_model.py
+    - ../rag/load_model.py
     - data/prepared/generated_questions.pkl
     outs:
     - data/prepared/evaluation_dataset.parquet
@@ -105,8 +105,8 @@ stages:
     cmd: python src/evaluate_rag.py
     deps:
       - src/evaluate_rag.py
-      - src/utils/create_rag.py
-      - src/utils/load_model.py
+      - ../rag/rag.py
+      - ../rag/load_model.py
       - data/prepared/evaluation_dataset.parquet
     outs:
       - evaluation/rag_results.json

@@ -13,10 +13,9 @@ const toggleAdvanced = () => (showAdvanced.value = !showAdvanced.value)
 
 const placeholders = [
   "Who is Mawlana?",
-  "What does fire symbolize?",
-  "What does wine represent?",
-  "What should we strive to?",
-  "What is the meaning of love?",
+  "Salamander symbolism",
+  "Fire and water",
+  "What is the true wealth?",
 ]
 
 const categories = ref({

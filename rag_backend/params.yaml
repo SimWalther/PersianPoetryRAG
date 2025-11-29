@@ -29,9 +29,9 @@ rag:
     Output:::
     Query: {question}
     Translation:
-  embedding_table_name: pgvectors_qwen512
+  embedding_table_name: pgvectors
   embedding_model: Qwen/Qwen3-Embedding-0.6B
-  embedding_size: 512
+  embedding_size: 1024
   num_references: 5
   num_retrieved: 15
   translation_model: gemma3n:e4b

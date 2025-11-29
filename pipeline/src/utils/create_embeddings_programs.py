@@ -26,9 +26,8 @@ def create_program_documents(df):
 def create_embeddings_programs(vector_store):
     print("Reading programs file...")
     programs = pd.read_parquet("data/raw/programs_with_translation.parquet")
-
     docs = create_program_documents(programs)
-    
+
     print("Adding programs to vector store...")
     add_documents_to_vector_store(vector_store, docs, batch_size=25)
 

@@ -71,9 +71,9 @@ async def main() -> None:
         metadata_columns=["type", "number", "part", "translation"]
     )
     
+    create_embeddings_programs(vector_store)
     create_embeddings_ghazal(vector_store)
     create_embeddings_masnavi(vector_store)
-    create_embeddings_programs(vector_store)
 
     # Index data
     print("Index data...")

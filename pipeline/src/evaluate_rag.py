@@ -6,13 +6,13 @@ import numpy as np
 from dotenv import dotenv_values
 from tqdm import tqdm
 from langchain_core.prompts import PromptTemplate
-from utils.load_model import load_llm
 import asyncio
 
 import sys
 sys.path.append("../rag")
 
 from rag import RAG
+from load_model import load_llm
 
 async def main() -> None:
     # Load config
