@@ -11,15 +11,26 @@ class Reranker:
             trust_remote_code=True
         )
     
-    def rerank(self, query: str, documents: list, top_k: int):
-        if len(documents) <= top_k:
-            return documents
+    def rerank(self, query: str, documents: list, score_threshold = 0.15):
+        # if len(documents) <= top_k:
+        #     return documents
         
-        pairs = [[query, doc.page_content] for doc in documents]
+        seen_docs = set()
+        unique_documents = []
+
+        for doc in documents:
+            if doc.page_content not in seen_docs:
+                seen_docs.add(doc.page_content)
+                unique_documents.append(doc)
+
+        pairs = [[query, doc.page_content] for doc in unique_documents]
         scores = self.model.predict(pairs, show_progress_bar=False)
         
         # Add scores to documents and sort
-        scored_docs = list(zip(documents, scores))
+        scored_docs = list(zip(unique_documents, scores))
         scored_docs.sort(key=lambda x: x[1], reverse=True)
+
+        # Filter doc by score
+        filtered = [doc for doc, score in scored_docs if score > score_threshold]
         
-        return [doc for doc, _ in scored_docs[:top_k]]
+        return filtered

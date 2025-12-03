@@ -3,6 +3,10 @@ labels:
   owner: simon
 include:
   - "*.py"
+  - "../rag/*.py"
+  - params.yaml
+  - .env
+  - data/*.pkl
 exclude:
   - "storage/"
 python:

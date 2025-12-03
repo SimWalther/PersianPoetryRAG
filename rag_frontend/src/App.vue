@@ -13,9 +13,8 @@ const toggleAdvanced = () => (showAdvanced.value = !showAdvanced.value)
 
 const placeholders = [
   "Who is Mawlana?",
-  "Salamander symbolism",
-  "Fire and water",
-  "What is the true wealth?",
+  "What does salamander represent?",
+  "Poem with fire and water",
 ]
 
 const categories = ref({

@@ -151,7 +151,6 @@ class RAG(object):
         retrieved_documents = self.reranker.rerank(
             persian_question,
             retrieved_documents,
-            self.num_references
         )
 
         return {
@@ -161,8 +160,11 @@ class RAG(object):
     def _generate(self, state: State):
         docs_content = ""
 
-        for doc_rank, doc in enumerate(state["context"]):
-            docs_content += f"{doc_rank}. {doc.page_content}\n"
+        # We take them in reverse order to be sure that the last
+        # tokens are from the best docs ensuring it stays in the LLM
+        # context.
+        for doc_rank, doc in enumerate(state["context"][::-1]):
+            docs_content += f"[{doc_rank}] {doc.page_content}\n"
 
         if state['model_category'] == 'expert':
             length = "Your answer must be detailed and in one paragraph."

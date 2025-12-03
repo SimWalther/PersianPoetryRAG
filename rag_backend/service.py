@@ -4,10 +4,10 @@ import yaml
 from typing import Dict
 from bentoml.exceptions import InvalidArgument
 
-import sys
-sys.path.append("../rag")
-
-from rag import RAG
+with bentoml.importing():
+    import sys
+    sys.path.append("../rag")
+    from rag import RAG
 
 @bentoml.service(
     traffic={"timeout": 600},
