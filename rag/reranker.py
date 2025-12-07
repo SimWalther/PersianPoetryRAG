@@ -11,7 +11,7 @@ class Reranker:
             trust_remote_code=True
         )
     
-    def rerank(self, query: str, documents: list, score_threshold = 0.15):
+    def rerank(self, query: str, documents: list, threshold: float):
         # if len(documents) <= top_k:
         #     return documents
         
@@ -30,7 +30,4 @@ class Reranker:
         scored_docs = list(zip(unique_documents, scores))
         scored_docs.sort(key=lambda x: x[1], reverse=True)
 
-        # Filter doc by score
-        filtered = [doc for doc, score in scored_docs if score > score_threshold]
-        
-        return filtered
+        return [doc for doc, score in scored_docs if score > threshold]

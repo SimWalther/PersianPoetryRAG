@@ -12,8 +12,7 @@ const showAdvanced = ref(false)
 const toggleAdvanced = () => (showAdvanced.value = !showAdvanced.value)
 
 const placeholders = [
-  "Who is Mawlana?",
-  "What does salamander represent?",
+  "What does salamander symbolize?",
   "Poem with fire and water",
 ]
 

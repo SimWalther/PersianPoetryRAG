@@ -9,8 +9,7 @@ from langgraph.graph import START, StateGraph
 from load_model import load_llm
 from typing import Dict, List, TypedDict
 from reranker import Reranker
-from bm25 import BM25
-from langdetect import detect
+from bm25 import BM25, preprocess_persian
 import unicodedata
 
 # Define state for application
@@ -28,7 +27,11 @@ class RAG(object):
         embedding_table_name,
         embedding_model,
         embedding_size,
-        num_references,
+        embedding_score_threshold,
+        bm25_score_threshold,
+        bm25_k1,
+        bm25_b,
+        reranker_threshold,
         num_retrieved,
         reader_prompt,
         translation_prompt,
@@ -50,8 +53,12 @@ class RAG(object):
 
         self.reader_prompt_template = PromptTemplate.from_template(reader_prompt)
         self.translation_prompt_template = PromptTemplate.from_template(translation_prompt)
-        self.num_references = num_references
         self.num_retrieved = num_retrieved
+        self.embedding_score_threshold = embedding_score_threshold
+        self.bm25_score_threshold = bm25_score_threshold
+        self.bm25_k1 = bm25_k1
+        self.bm25_b = bm25_b
+        self.reranker_threshold = reranker_threshold
 
         # Create Postgres engine
         self.engine = PGEngine.from_connection_string(url=connection_string)
@@ -71,13 +78,8 @@ class RAG(object):
             for model_category, model_name in reader_models.items()
         }
 
-
-        self.bm25_retrievers = {
-            'ghazal': BM25().create(ghazal_path, k=num_retrieved),
-            'masnavi': BM25().create(masnavi_path, k=num_retrieved),
-            'program': BM25().create(programs_path, k=num_retrieved)
-        }
-
+        self.bm25_retriever = BM25().create([ghazal_path, masnavi_path, programs_path], index_name='index', b=self.bm25_b, k1=self.bm25_k1)
+        
         # Create vector store
         self.vector_store = await PGVectorStore.create(
             engine=self.engine,
@@ -123,7 +125,6 @@ class RAG(object):
         if len(state['selected_types']) >= 1:
             metadata_filter["type"] = {"$in": state['selected_types']}
 
-        print(f"detected language: {detect(state['question'])}")
         # Translate question
         if self._is_alphabet_persian(state['question']):
             persian_question = state['question']
@@ -134,23 +135,29 @@ class RAG(object):
             
 
         retrieved_documents = []
+        preprocessed_query = preprocess_persian(persian_question) # Important we need to preprocess the query before BM25!
 
-        for doc_type, retriever in self.bm25_retrievers.items():
-            if doc_type in state['selected_types']:
-                retrieved_documents.extend(
-                    retriever.invoke(persian_question)
-                )
+        print(f"preprocessed_query: {preprocessed_query}")
+    
+        # We filter documents afterhand
+        # because doing seperate bm25 index
+        # doesn't normalize document length correctly
+        bm25_documents = self.bm25_retriever.retrieve(preprocessed_query, limit=self.num_retrieved, threshold=self.bm25_score_threshold)
+        for retrieved_doc in bm25_documents:
+            if retrieved_doc.metadata['type'] in state['selected_types']:
+                retrieved_documents.append(retrieved_doc)
 
-        retrieved_documents.extend(
-            self.vector_store.similarity_search(
-                f"Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: {state['question']}",
-                k=self.num_retrieved, filter=metadata_filter
-            )
-        )
+        # embedding_search_results = self.vector_store.similarity_search_with_score(
+        #     f"Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: {state["question"]}",
+        #     k=self.num_retrieved, filter=metadata_filter
+        # )
+
+        # retrieved_documents.extend([doc for doc, score in embedding_search_results if score >= self.embedding_score_threshold])
 
         retrieved_documents = self.reranker.rerank(
             persian_question,
             retrieved_documents,
+            threshold=self.reranker_threshold
         )
 
         return {
@@ -160,11 +167,8 @@ class RAG(object):
     def _generate(self, state: State):
         docs_content = ""
 
-        # We take them in reverse order to be sure that the last
-        # tokens are from the best docs ensuring it stays in the LLM
-        # context.
-        for doc_rank, doc in enumerate(state["context"][::-1]):
-            docs_content += f"[{doc_rank}] {doc.page_content}\n"
+        for doc_rank, doc in enumerate(state["context"][:5]):
+            docs_content += f"{doc.metadata['type']} {doc.metadata['number']}: {doc.page_content}\n"
 
         if state['model_category'] == 'expert':
             length = "Your answer must be detailed and in one paragraph."

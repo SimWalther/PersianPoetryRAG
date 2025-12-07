@@ -33,8 +33,12 @@ rag:
   embedding_table_name: pgvectors
   embedding_model: Qwen/Qwen3-Embedding-0.6B
   embedding_size: 1024
-  num_references: 5
-  num_retrieved: 15
+  embedding_score_threshold: 0.8
+  bm25_score_threshold: 10
+  bm25_k1: 1.5
+  bm25_b: 0.85
+  reranker_threshold: 0.08
+  num_retrieved: 30
   translation_model: gemma3n:e4b
-  reader_models_fast: gemma3n:e4b
+  reader_models_fast: glm4:9b
   reader_models_expert: glm4:9b

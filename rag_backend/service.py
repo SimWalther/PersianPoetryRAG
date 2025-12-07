@@ -30,8 +30,12 @@ class RAGService:
         self.translation_prompt = rag_params["translation_prompt"]
         self.embedding_table_name = rag_params["embedding_table_name"]
         self.embedding_model = rag_params["embedding_model"]
-        self.embedding_size= rag_params["embedding_size"]
-        self.num_references = rag_params["num_references"]
+        self.embedding_size = rag_params["embedding_size"]
+        self.embedding_score_threshold = rag_params["embedding_score_threshold"]
+        self.bm25_score_threshold = rag_params["bm25_score_threshold"]
+        self.bm25_k1 = rag_params["bm25_k1"]
+        self.bm25_b = rag_params["bm25_b"]
+        self.reranker_threshold = rag_params["reranker_threshold"]
         self.num_retrieved = rag_params["num_retrieved"]
         self.translation_model = rag_params["translation_model"]
         self.reader_models = {
@@ -46,7 +50,11 @@ class RAGService:
             embedding_table_name=self.embedding_table_name,
             embedding_model=self.embedding_model,
             embedding_size=self.embedding_size,
-            num_references=self.num_references,
+            embedding_score_threshold=self.embedding_score_threshold,
+            bm25_score_threshold=self.bm25_score_threshold,
+            bm25_k1=self.bm25_k1,
+            bm25_b=self.bm25_b,
+            reranker_threshold=self.reranker_threshold,
             num_retrieved=self.num_retrieved,
             reader_prompt=self.reader_prompt,
             translation_prompt=self.translation_prompt,
