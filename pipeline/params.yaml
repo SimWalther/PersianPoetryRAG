@@ -17,6 +17,7 @@ create_embeddings:
   embedding_model: Qwen/Qwen3-Embedding-0.6B
   embedding_table_name: pgvectors_wip
   embedding_size: 1024
+  embedding_threshold_score: 0.7  
 create_evaluation_questions:
   num_questions: 100
   question_generation_model: gemma3n:e4b
@@ -66,9 +67,13 @@ filter_generated_questions:
     Context: {context}
     Answer:::
 rag:
-  num_references: 5
-  num_retrieved: 15
-  reader_model: glm4:9b
+  bm25_score_threshold: 10
+  bm25_k1: 1.5
+  bm25_b: 0.85
+  reranker_threshold: 0.08
+  num_retrieved: 30
+  reader_models_fast: glm4:9b
+  reader_models_expert: glm4:9b
   translation_model: gemma3n:e4b
   reader_prompt: |
     You're a RAG system, expert in interpreting Persian poetry and passionate about Jalāl al-Dīn Muḥammad Rumi poems.

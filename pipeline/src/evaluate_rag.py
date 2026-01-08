@@ -33,15 +33,24 @@ async def main() -> None:
     # Create RAG
     print("Create RAG...")
 
+    reader_models = {
+        "fast": rag_params["reader_models_fast"],
+        "expert": rag_params["reader_models_expert"],
+    }
+
     rag = await RAG.create(
         embedding_table_name = embedding_params["embedding_table_name"],
         embedding_model = embedding_params["embedding_model"],
         embedding_size = embedding_params["embedding_size"],
-        num_references = rag_params["num_references"],
+        embedding_score_threshold=embedding_params["embedding_threshold_score"],
+        bm25_score_threshold=rag_params["bm25_score_threshold"],
+        bm25_k1=rag_params["bm25_k1"],
+        bm25_b=rag_params["bm25_b"],
+        reranker_threshold=rag_params["reranker_threshold"],
         num_retrieved = rag_params["num_retrieved"],
         reader_prompt = rag_params["reader_prompt"],
         translation_prompt = rag_params["translation_prompt"],
-        reader_models = {'fast': rag_params["reader_model"]},
+        reader_models = reader_models,
         translation_model = rag_params["translation_model"],
         ghazal_path = 'data/prepared/ghazal_documents.pkl',
         masnavi_path = 'data/prepared/masnavi_documents.pkl',
@@ -55,10 +64,10 @@ async def main() -> None:
 
     for _, example in tqdm(evaluation_dataset.iterrows(), total=len(evaluation_dataset)):
         question = example["question"]
-        answer = rag.query(query=question, model_category='fast', selected_types=['ghazal', 'program', 'masnavi'])['answer'].model_dump()
+        answer = rag.query(query=question, model_category='fast', selected_types=['ghazal', 'program', 'masnavi'])#.model_dump()
 
         generated_answer = answer['answer'] if 'answer' in answer else ''
-        retrieved_docs = answer['references'] if 'references' in answer else []
+        # retrieved_docs = answer['context'] if 'context' in answer else []
 
         result = {
             "question": question,
@@ -67,7 +76,7 @@ async def main() -> None:
             "number": example["number"], 
             "part": example["part"], 
             "generated_answer": generated_answer,
-            "retrieved_docs": retrieved_docs,
+            # "retrieved_docs": retrieved_docs,
         }
         
         outputs.append(result)

@@ -33,7 +33,7 @@ rag:
   embedding_table_name: pgvectors
   embedding_model: Qwen/Qwen3-Embedding-0.6B
   embedding_size: 1024
-  embedding_score_threshold: 0.8
+  embedding_score_threshold: 0.7
   bm25_score_threshold: 10
   bm25_k1: 1.5
   bm25_b: 0.85

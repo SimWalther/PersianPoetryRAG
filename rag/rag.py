@@ -147,12 +147,12 @@ class RAG(object):
             if retrieved_doc.metadata['type'] in state['selected_types']:
                 retrieved_documents.append(retrieved_doc)
 
-        # embedding_search_results = self.vector_store.similarity_search_with_score(
-        #     f"Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: {state["question"]}",
-        #     k=self.num_retrieved, filter=metadata_filter
-        # )
+        embedding_search_results = self.vector_store.similarity_search_with_score(
+            f"Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: {state["question"]}",
+            k=self.num_retrieved, filter=metadata_filter
+        )
 
-        # retrieved_documents.extend([doc for doc, score in embedding_search_results if score >= self.embedding_score_threshold])
+        retrieved_documents.extend([doc for doc, score in embedding_search_results if score >= self.embedding_score_threshold])
 
         retrieved_documents = self.reranker.rerank(
             persian_question,

@@ -110,6 +110,7 @@ stages:
       - data/prepared/evaluation_dataset.parquet
     outs:
       - evaluation/rag_results.json
+      - data/index_bm25_retriever.pkl
     metrics:
       - evaluation/metrics.json
     plots:
